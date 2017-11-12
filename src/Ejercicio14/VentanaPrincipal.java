@@ -2,6 +2,7 @@ package Ejercicio14;
 
 import java.awt.Button;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -47,15 +48,18 @@ public class VentanaPrincipal {
 	JButton nuevoB = new JButton("Nuevo");
 
 	// Radio Buttons:
-	JRadioButton rbNegro;
-	JRadioButton rbAzul;
-	JRadioButton rbBlanco;
-	JRadioButton rbVerde;
-
+	JRadioButton [] arrayBotones=new JRadioButton[4];
+	//Un array de string para ponerles nombre
+	String[] nombreBotones= {"Negro","Azul","Blanco","Verde"};
+	// Array de colores para el boton Cargar.
+	Color[] colores = new Color[4];
+	
+	
 	// La label en la que pinto las im√°genes:
 	JLabel imagenGrande;
 	
-	File ultimaRuta=null;
+	// Ruta para mostrar cuando pulse el boton nuevo.
+	File ultimaRuta = null;
 
 	// Constructor, marca el tama√±o y el cierre del frame
 	public VentanaPrincipal() {
@@ -130,18 +134,18 @@ public class VentanaPrincipal {
 
 		// Radio Buttons:
 		ButtonGroup grupo = new ButtonGroup();
-		rbNegro = new JRadioButton("Negro");
-		rbAzul = new JRadioButton("Azul");
-		rbBlanco = new JRadioButton("Blanco");
-		rbVerde = new JRadioButton("Verde");
-		grupo.add(rbNegro);
-		grupo.add(rbAzul);
-		grupo.add(rbBlanco);
-		grupo.add(rbVerde);
-		panelRBotones.add(rbNegro);
-		panelRBotones.add(rbAzul);
-		panelRBotones.add(rbBlanco);
-		panelRBotones.add(rbVerde);
+		for (int i = 0; i < arrayBotones.length; i++) {//Recorro el array de botones
+			arrayBotones[i]=new JRadioButton(nombreBotones[i]);//Les doy un nombre
+			grupo.add(arrayBotones[i]);//Los aÒado al grupo
+			panelRBotones.add(arrayBotones[i]);//Los aÒado al panel
+		}
+
+
+		// Array de los colores
+		colores[0] = Color.BLACK;
+		colores[1] = Color.BLUE;
+		colores[2] = Color.WHITE;
+		colores[3] = Color.GREEN;
 
 		settings = new GridBagConstraints();
 		settings.gridx = 0;
@@ -163,14 +167,14 @@ public class VentanaPrincipal {
 				// Utilizo el file Chooser para determinar qu√© imagen cargar:
 
 				JFileChooser chooser = new JFileChooser();
-				if (ultimaRuta!=null) {
+				if (ultimaRuta != null) {
 					chooser.setCurrentDirectory(ultimaRuta);
 				}
 				FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & PNG Imagenes", "zip", "png");
 				chooser.setFileFilter(filter);
 				int returnVal = chooser.showOpenDialog(ventana);
 				if (returnVal == JFileChooser.APPROVE_OPTION) { // SI HEMOS SELECIONADO UN FICHERO:
-					ultimaRuta=chooser.getCurrentDirectory();
+					ultimaRuta = chooser.getCurrentDirectory();
 
 					// Obtengo el fichero
 					File selectedFile = chooser.getSelectedFile();
@@ -188,6 +192,36 @@ public class VentanaPrincipal {
 				}
 
 			}
+		});
+
+		nuevoB.addActionListener(new ActionListener() {//Pongo en el panel imagenGrande el color que esta seleccionado en los botones.
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				// Creamos bufferedImage
+				BufferedImage pintarRectangulo = new BufferedImage(panelIzq.getWidth(), panelIzq.getHeight(),
+						BufferedImage.TYPE_INT_RGB);// sI NO FUNCIONA CAMBIAR EL TAMA—O DEL CUADRADO A NUMEROS
+
+				Graphics graficos = pintarRectangulo.getGraphics();
+				for (int i = 0; i < arrayBotones.length; i++) {
+					
+					if (arrayBotones[i].isSelected()) {
+						graficos.setColor(colores[i]);
+					}
+				}
+				graficos.fillRect(0, 0, pintarRectangulo.getWidth(), pintarRectangulo.getHeight());
+				
+				graficos.dispose();//Desecho la variable
+				
+				// Usamos imagenGrande que es el label de poner fotos
+
+				
+				imagenGrande.setIcon(new ImageIcon(pintarRectangulo));;
+			}
+			
+			
+			
 		});
 
 	}
